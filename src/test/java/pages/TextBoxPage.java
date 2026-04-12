@@ -1,11 +1,9 @@
 package pages;
 
 import com.codeborne.selenide.SelenideElement;
-
-import java.util.Arrays;
+import pages.components.CheckResponseComponent;
 
 import static com.codeborne.selenide.Condition.cssValue;
-import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Selectors.byId;
 import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.Selenide.open;
@@ -52,7 +50,7 @@ public class TextBoxPage {
     }
 
     public TextBoxPage checkOutputOnCorrectData(String... params) {
-        Arrays.stream(params).forEach(x -> outputDiv.shouldHave(text(x)));
+        CheckResponseComponent.checkResponseOnCorrectData(outputDiv, params);
         return this;
     }
 

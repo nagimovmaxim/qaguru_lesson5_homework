@@ -3,11 +3,11 @@ package pages;
 import com.codeborne.selenide.SelenideElement;
 import org.openqa.selenium.Keys;
 import pages.components.CalendarComponent;
+import pages.components.CheckResponseComponent;
 import pages.components.StateAndCityComponent;
 
-import java.util.Arrays;
-
-import static com.codeborne.selenide.Condition.*;
+import static com.codeborne.selenide.Condition.appear;
+import static com.codeborne.selenide.Condition.cssValue;
 import static com.codeborne.selenide.Selectors.*;
 import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.Selenide.open;
@@ -28,11 +28,8 @@ public class PracticeFormPage {
             currentAddressTextArea = $("textarea[id=currentAddress]"),
             submitButton = $(byId("submit")),
             responseTable = $(byClassName("table-responsive")),
-            maleRadioBorder = $(byId("gender-radio-1")),
             maleRadio = $(by("for", "gender-radio-1")),
-            femaleRadioBorder = $(byId("gender-radio-2")),
             femaleRadio = $(by("for", "gender-radio-2")),
-            otherRadioBorder = $(byId("gender-radio-3")),
             otherRadio = $(by("for", "gender-radio-3"));
 
     public PracticeFormPage openPage() {
@@ -67,7 +64,7 @@ public class PracticeFormPage {
 
     public PracticeFormPage setDateOfBirth(String year, String month, String day) {
         dateOfBirthInput.click();
-        new CalendarComponent().set(year, month, day);
+        CalendarComponent.set(year, month, day);
         return this;
     }
 
@@ -92,7 +89,7 @@ public class PracticeFormPage {
     }
 
     public PracticeFormPage setStateAndCity(String state, String city) {
-        new StateAndCityComponent().set(state, city);
+        StateAndCityComponent.set(state, city);
         return this;
     }
 
@@ -107,7 +104,7 @@ public class PracticeFormPage {
     }
 
     public PracticeFormPage checkResponseTableOnCorrectData(String... params) {
-        Arrays.stream(params).forEach(x -> responseTable.$("tbody").shouldHave(text(x)));
+        CheckResponseComponent.checkResponseOnCorrectData(responseTable.$("tbody"), params);
         return this;
     }
 

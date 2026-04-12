@@ -1,8 +1,7 @@
 package testData;
 
 public class PracticeFormTestData {
-    public final static String formUrl = "/automation-practice-form",
-            userEmailIncorrect = "qwerewrq",
+    public final static String userEmailIncorrect = "qwerewrq",
             userNumberIncorrect = "retertert",
             firstName = "sdfgsdfgsdfg",
             lastName = "fhgjgfhjfgh",
