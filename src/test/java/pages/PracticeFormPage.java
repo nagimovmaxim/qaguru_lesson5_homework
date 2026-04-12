@@ -5,9 +5,7 @@ import org.openqa.selenium.Keys;
 import pages.components.CalendarComponent;
 import pages.components.StateAndCityComponent;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.Set;
+import java.util.Arrays;
 
 import static com.codeborne.selenide.Condition.*;
 import static com.codeborne.selenide.Selectors.*;
@@ -15,25 +13,27 @@ import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.Selenide.open;
 
 public class PracticeFormPage {
-    private final String pageUrl = "/automation-practice-form";
-    private final SelenideElement firstNameInput = $(byId("firstName"));
-    private final SelenideElement lastNameInput = $(byId("lastName"));
-    private final SelenideElement userEmailInput = $(byId("userEmail"));
-    private final SelenideElement genderInput = $(byId("genterWrapper"));
-    private final SelenideElement userNumberInput = $(byId("userNumber"));
-    private final SelenideElement dateOfBirthInput = $(byId("dateOfBirthInput"));
-    private final SelenideElement subjectsInput = $(byId("subjectsInput"));
-    private final SelenideElement hobbiesInput = $(byId("hobbiesWrapper"));
-    private final SelenideElement pictureInput = $(byId("uploadPicture"));
-    private final SelenideElement currentAddressTextArea = $("textarea[id=currentAddress]");
-    private final SelenideElement submitButton = $(byId("submit"));
-    private final SelenideElement responseTable = $(byClassName("table-responsive"));
-    private final SelenideElement maleRadioBorder = $(byId("gender-radio-1"));
-    private final SelenideElement maleRadio = $(by("for", "gender-radio-1"));
-    private final SelenideElement femaleRadioBorder = $(byId("gender-radio-2"));
-    private final SelenideElement femaleRadio = $(by("for", "gender-radio-2"));
-    private final SelenideElement otherRadioBorder = $(byId("gender-radio-3"));
-    private final SelenideElement otherRadio = $(by("for", "gender-radio-3"));
+    private final String pageUrl = "/automation-practice-form",
+            errorPropertyName = "border-color",
+            errorPropertyValue = "rgb(220, 53, 69)";
+    private final SelenideElement firstNameInput = $(byId("firstName")),
+            lastNameInput = $(byId("lastName")),
+            userEmailInput = $(byId("userEmail")),
+            genderInput = $(byId("genterWrapper")),
+            userNumberInput = $(byId("userNumber")),
+            dateOfBirthInput = $(byId("dateOfBirthInput")),
+            subjectsInput = $(byId("subjectsInput")),
+            hobbiesInput = $(byId("hobbiesWrapper")),
+            pictureInput = $(byId("uploadPicture")),
+            currentAddressTextArea = $("textarea[id=currentAddress]"),
+            submitButton = $(byId("submit")),
+            responseTable = $(byClassName("table-responsive")),
+            maleRadioBorder = $(byId("gender-radio-1")),
+            maleRadio = $(by("for", "gender-radio-1")),
+            femaleRadioBorder = $(byId("gender-radio-2")),
+            femaleRadio = $(by("for", "gender-radio-2")),
+            otherRadioBorder = $(byId("gender-radio-3")),
+            otherRadio = $(by("for", "gender-radio-3"));
 
     public PracticeFormPage openPage() {
         open(this.pageUrl);
@@ -65,10 +65,7 @@ public class PracticeFormPage {
         return this;
     }
 
-    public PracticeFormPage setDateOfBirth(String date) {
-        String year = date.split(",")[1];
-        String month = date.split(",")[0].split(" ")[1];
-        String day = date.split(",")[0].split(" ")[0];
+    public PracticeFormPage setDateOfBirth(String year, String month, String day) {
         dateOfBirthInput.click();
         new CalendarComponent().set(year, month, day);
         return this;
@@ -94,9 +91,7 @@ public class PracticeFormPage {
         return this;
     }
 
-    public PracticeFormPage setStateAndCity(String value) {
-        String state = value.split(" ")[0];
-        String city = value.split(" ")[1];
+    public PracticeFormPage setStateAndCity(String state, String city) {
         new StateAndCityComponent().set(state, city);
         return this;
     }
@@ -111,98 +106,28 @@ public class PracticeFormPage {
         return this;
     }
 
-    public PracticeFormPage checkResponseTableOnCorrectData(LinkedHashMap<String, String> correctFormData) {
-        responseTable.$("tbody").$$("tr").forEach(x -> {
-            x.$$("td").get(1).shouldHave(text(correctFormData.get(x.$$("td").get(0).text())));
-        });
+    public PracticeFormPage checkResponseTableOnCorrectData(String... params) {
+        Arrays.stream(params).forEach(x -> responseTable.$("tbody").shouldHave(text(x)));
         return this;
     }
 
-    public PracticeFormPage checkResponseTableOnShortCorrectData(LinkedHashMap<String, String> correctFormData, Set<Integer> numFieldsForShortSubmit) {
-        responseTable.$("tbody").$$("tr").forEach(x -> {
-            String key = x.$$("td").get(0).text();
-            Integer numField = (new ArrayList<>(correctFormData.keySet())).indexOf(key) + 1;
-            if (numFieldsForShortSubmit.contains(numField)) {
-                x.$$("td").get(1).shouldHave(text(correctFormData.get(key)));
-            }
-        });
+    public PracticeFormPage checkRequiredElementsOnEmptyData() {
+        firstNameInput.shouldHave(cssValue(errorPropertyName, errorPropertyValue));
+        lastNameInput.shouldHave(cssValue(errorPropertyName, errorPropertyValue));
+        maleRadio.shouldHave(cssValue(errorPropertyName, errorPropertyValue));
+        femaleRadio.shouldHave(cssValue(errorPropertyName, errorPropertyValue));
+        otherRadio.shouldHave(cssValue(errorPropertyName, errorPropertyValue));
+        userNumberInput.shouldHave(cssValue(errorPropertyName, errorPropertyValue));
         return this;
     }
 
-    public PracticeFormPage checkFirstNameOnEmptyData(String value) {
-        String propertyName = value.split(";")[0];
-        String propertyValue = value.split(";")[1];
-        firstNameInput.shouldHave(cssValue(propertyName, propertyValue));
+    public PracticeFormPage checkUserEmailOnIncorrectData() {
+        userEmailInput.shouldHave(cssValue(errorPropertyName, errorPropertyValue));
         return this;
     }
 
-    public PracticeFormPage checkLastNameOnEmptyData(String value) {
-        String propertyName = value.split(";")[0];
-        String propertyValue = value.split(";")[1];
-        lastNameInput.shouldHave(cssValue(propertyName, propertyValue));
-        return this;
-    }
-
-    public PracticeFormPage checkMaleRadioBorderOnEmptyData(String value) {
-        String propertyName = value.split(";")[0];
-        String propertyValue = value.split(";")[1];
-        maleRadioBorder.shouldHave(cssValue(propertyName, propertyValue));
-        return this;
-    }
-
-    public PracticeFormPage checkMaleRadioOnEmptyData(String value) {
-        String propertyName = value.split(";")[0];
-        String propertyValue = value.split(";")[1];
-        maleRadio.shouldHave(cssValue(propertyName, propertyValue));
-        return this;
-    }
-
-    public PracticeFormPage checkFemaleRadioBorderOnEmptyData(String value) {
-        String propertyName = value.split(";")[0];
-        String propertyValue = value.split(";")[1];
-        femaleRadioBorder.shouldHave(cssValue(propertyName, propertyValue));
-        return this;
-    }
-
-    public PracticeFormPage checkFemaleRadioOnEmptyData(String value) {
-        String propertyName = value.split(";")[0];
-        String propertyValue = value.split(";")[1];
-        femaleRadio.shouldHave(cssValue(propertyName, propertyValue));
-        return this;
-    }
-
-    public PracticeFormPage checkOtherRadioBorderOnEmptyData(String value) {
-        String propertyName = value.split(";")[0];
-        String propertyValue = value.split(";")[1];
-        otherRadioBorder.shouldHave(cssValue(propertyName, propertyValue));
-        return this;
-    }
-
-    public PracticeFormPage checkOtherRadioOnEmptyData(String value) {
-        String propertyName = value.split(";")[0];
-        String propertyValue = value.split(";")[1];
-        otherRadio.shouldHave(cssValue(propertyName, propertyValue));
-        return this;
-    }
-
-    public PracticeFormPage checkUserNumberOnEmptyData(String value) {
-        String propertyName = value.split(";")[0];
-        String propertyValue = value.split(";")[1];
-        userNumberInput.shouldHave(cssValue(propertyName, propertyValue));
-        return this;
-    }
-
-    public PracticeFormPage checkUserEmailOnIncorrectData(String value) {
-        String propertyName = value.split(";")[0];
-        String propertyValue = value.split(";")[1];
-        userEmailInput.shouldHave(cssValue(propertyName, propertyValue));
-        return this;
-    }
-
-    public PracticeFormPage checkUserNumberOnIncorrectData(String value) {
-        String propertyName = value.split(";")[0];
-        String propertyValue = value.split(";")[1];
-        userNumberInput.shouldHave(cssValue(propertyName, propertyValue));
+    public PracticeFormPage checkUserNumberOnIncorrectData() {
+        userNumberInput.shouldHave(cssValue(errorPropertyName, errorPropertyValue));
         return this;
     }
 }

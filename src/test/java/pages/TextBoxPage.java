@@ -2,9 +2,7 @@ package pages;
 
 import com.codeborne.selenide.SelenideElement;
 
-import java.util.AbstractMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.Arrays;
 
 import static com.codeborne.selenide.Condition.cssValue;
 import static com.codeborne.selenide.Condition.text;
@@ -13,14 +11,15 @@ import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.Selenide.open;
 
 public class TextBoxPage {
-    private final String pageUrl = "/text-box";
-    private final SelenideElement userNameInput = $(byId("userName"));
-    private final SelenideElement userEmailInput = $(byId("userEmail"));
-    private final Map.Entry<String, String> userEmailBadProperty = new AbstractMap.SimpleImmutableEntry<>("border-color", "rgb(255, 0, 0)");
-    private final SelenideElement currentAddressTextArea = $(byId("currentAddress"));
-    private final SelenideElement permanentAddressTextArea = $(byId("permanentAddress"));
-    private final SelenideElement submitButton = $(byId("submit"));
-    private final SelenideElement outputDiv = $(byId("output"));
+    private final String pageUrl = "/text-box",
+            errorPropertyName = "border-color",
+            errorPropertyValue = "rgb(255, 0, 0)";
+    private final SelenideElement userNameInput = $(byId("userName")),
+            userEmailInput = $(byId("userEmail")),
+            currentAddressTextArea = $(byId("currentAddress")),
+            permanentAddressTextArea = $(byId("permanentAddress")),
+            submitButton = $(byId("submit")),
+            outputDiv = $(byId("output"));
 
     public TextBoxPage openPage() {
         open(this.pageUrl);
@@ -52,15 +51,13 @@ public class TextBoxPage {
         return this;
     }
 
-    public TextBoxPage checkOutputOnCorrectData(LinkedHashMap<String, String> correctFormData) {
-        correctFormData.keySet().forEach(x -> {
-            outputDiv.$(byId(x)).shouldHave(text(correctFormData.get(x)));
-        });
+    public TextBoxPage checkOutputOnCorrectData(String... params) {
+        Arrays.stream(params).forEach(x -> outputDiv.shouldHave(text(x)));
         return this;
     }
 
     public TextBoxPage checkEmailOnError() {
-        userEmailInput.shouldHave(cssValue(userEmailBadProperty.getKey(), userEmailBadProperty.getValue()));
+        userEmailInput.shouldHave(cssValue(errorPropertyName, errorPropertyValue));
         return this;
     }
 }
